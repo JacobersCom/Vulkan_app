@@ -10,3 +10,8 @@
 - pAllocte is used for passing callback function into Vulkan functions
 - You can retrieve a list of supported extensions before creating your Vulkan instance
 - Should also call ``VkDestoryInstance`` after a program is done running
+
+### Chapter two
+- Finished challenge from chapter one, which checks which extension are avaiable through glfw, and vulkan.h
+- Enabled validation layer support. C++ has a macro to check if the program is in debug. If so validation layer support is enabled, but if layer support is for some reason not avaiable the program will throw a runtime error.
+- TBC

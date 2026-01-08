@@ -132,14 +132,22 @@ private:
 
 		InstanceInfo.enabledExtensionCount = glfwExtensionsCount;
 		InstanceInfo.ppEnabledExtensionNames = glfwRequiredExtensions;
-		//Count of enabled validation layers
-		InstanceInfo.enabledLayerCount = 0;
+		
+		if (enableValidationLayers)
+		{
+			InstanceInfo.ppEnabledLayerNames = validationLayers.data();
+			InstanceInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+		}
+		else
+		{
+			InstanceInfo.enabledLayerCount = 0;
+		}
 
 		VkResult result = vkCreateInstance(&InstanceInfo, nullptr, &Instance);
 
 		if (result != VK_SUCCESS)
 		{
-			std::runtime_error("ERROR::Failed to create VkInstance");
+			throw std::runtime_error("ERROR::Failed to create VkInstance");
 		}
 
 		uint32_t ExtensionCount = 0;
@@ -173,17 +181,12 @@ private:
 			{
 				if (*ptrEx == *ptrGlfwEx)
 				{
-					std::cout << "Match Found!\n" << "VkExtension: " << ptrEx
+					std::cout << "\nMatch Found!\n" << "VkExtension: " << ptrEx
 						<< "\nGlfwExtension: " << ptrGlfwEx << std::endl;
 
 					ExCount++;
 				}
 					
-			}
-			if (ExCount == 20)
-			{
-				delete ptrEx;
-				delete ptrGlfwEx;
 			}
 		}
 		std::cout << "Total extension count: " << ExCount << std::endl;
