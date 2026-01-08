@@ -11,6 +11,7 @@ class HelloTriangle
 private:
 
 	int width = 700, height = 700;
+	int ExCount = 0;
 	GLFWwindow* glfwWindow;
 
 	//Handle to instance
@@ -113,27 +114,33 @@ private:
 		vkEnumerateInstanceExtensionProperties(nullptr, &ExtensionCount, extension.data());
 		vkEnumerateInstanceExtensionProperties(nullptr, &glfwExtensionsCount, glfwExtensions.data());
 
-		std::cout << "avaliable extension" << std::endl;
 
-		for (auto& ex : extension)
+		
+		//What extensions are available through vulkan and glfw?
+		
+		std::cout << "avaliable extension throught vulkan and glfw" << std::endl;
+		
+		if (extension.size() != glfwExtensions.size())
+			return;
+
+
+		for (;ExCount < extension.size();)
 		{
-			for (auto& gflwEx: glfwExtensions)
+			char* ptrEx = extension[ExCount].extensionName;
+			char* ptrGlfwEx = glfwExtensions[ExCount].extensionName;
+				
+			if (*ptrEx != '\0' && *ptrGlfwEx != '\0')
 			{
-				char* ptrEx = ex.extensionName;
-				char* ptrGflwEx = gflwEx.extensionName;
-				
-				while (ptrEx != nullptr && ptrGflwEx != nullptr)
+				if (*ptrEx == *ptrGlfwEx)
 				{
-					if (*ptrEx == *ptrGflwEx)
-					{
-						std::cout << "Match: " << "VkExtension: " << ex.extensionName 
-							<< "GlfwExtension: " << gflwEx.extensionName << std::endl;
-					}
-					
+					std::cout << "Match Found!\n" << "VkExtension: " << ptrEx
+						<< "\nGlfwExtension: " << ptrGlfwEx << std::endl;
+
+					ExCount++;
 				}
-				
+					
 			}
 		}
-
+		std::cout << "Total extension count: " << ExCount << std::endl;
 	}
 };
