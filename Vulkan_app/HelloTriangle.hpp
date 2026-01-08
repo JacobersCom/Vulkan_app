@@ -82,13 +82,13 @@ private:
 		InstanceInfo.pApplicationInfo = &appInfo;
 
 		uint32_t glfwExtensionsCount = 0;
-		const char** glfwExtensions;
+		const char** glfwRequiredExtensions;
 
 		//Passes a array of vulkan extensions needed for glfw to create vulkan surfaces
-		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
+		glfwRequiredExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionsCount);
 
 		InstanceInfo.enabledExtensionCount = glfwExtensionsCount;
-		InstanceInfo.ppEnabledExtensionNames = glfwExtensions;
+		InstanceInfo.ppEnabledExtensionNames = glfwRequiredExtensions;
 		//Count of enabled validation layers
 		InstanceInfo.enabledLayerCount = 0;
 
@@ -103,27 +103,37 @@ private:
 
 		//total number of avaliable extensions
 		vkEnumerateInstanceExtensionProperties(nullptr, &ExtensionCount, nullptr);
+		vkEnumerateInstanceExtensionProperties(nullptr, &glfwExtensionsCount, nullptr);
 
 		//Array of extensionproperties. The size is determined by the count
 		std::vector<VkExtensionProperties> extension(ExtensionCount);
+		std::vector<VkExtensionProperties> glfwExtensions(glfwExtensionsCount);
 
 		//Returns the name and version of avaliable extension
 		vkEnumerateInstanceExtensionProperties(nullptr, &ExtensionCount, extension.data());
+		vkEnumerateInstanceExtensionProperties(nullptr, &glfwExtensionsCount, glfwExtensions.data());
 
 		std::cout << "avaliable extension" << std::endl;
 
-		for (const auto& ex : extension)
+		for (auto& ex : extension)
 		{
-			std::cout << ex.extensionName << "avaliable" << std::endl;
-		}
-		
-		//The start of checking if the all the glfw extension match the 
-		//Vkextensionproperties
-		for (int i = 0; i < ExtensionCount; i++)
-		{
-			std::cout << glfwExtensions[i] << "\n" << std::endl;
+			for (auto& gflwEx: glfwExtensions)
+			{
+				char* ptrEx = ex.extensionName;
+				char* ptrGflwEx = gflwEx.extensionName;
+				
+				while (ptrEx != nullptr && ptrGflwEx != nullptr)
+				{
+					if (*ptrEx == *ptrGflwEx)
+					{
+						std::cout << "Match: " << "VkExtension: " << ex.extensionName 
+							<< "GlfwExtension: " << gflwEx.extensionName << std::endl;
+					}
+					
+				}
+				
+			}
 		}
 
 	}
-	
 };
