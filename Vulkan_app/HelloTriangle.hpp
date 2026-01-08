@@ -51,7 +51,9 @@ private:
 
 	void CleanUp()
 	{
+		glfwDestroyWindow(glfwWindow);
 
+		glfwTerminate();
 	}
 
 	
