@@ -43,7 +43,10 @@ private:
 
 	void Update()
 	{
-
+		while (!glfwWindowShouldClose(glfwWindow))
+		{
+			glfwPollEvents();
+		}
 	}
 
 	void CleanUp()
