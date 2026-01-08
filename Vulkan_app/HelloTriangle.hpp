@@ -56,6 +56,8 @@ private:
 
 	void CleanUp()
 	{
+		vkDestroyInstance(Instance, nullptr);
+
 		glfwDestroyWindow(glfwWindow);
 
 		glfwTerminate();
@@ -113,6 +115,13 @@ private:
 		for (const auto& ex : extension)
 		{
 			std::cout << ex.extensionName << "avaliable" << std::endl;
+		}
+		
+		//The start of checking if the all the glfw extension match the 
+		//Vkextensionproperties
+		for (int i = 0; i < ExtensionCount; i++)
+		{
+			std::cout << glfwExtensions[i] << "\n" << std::endl;
 		}
 
 	}
