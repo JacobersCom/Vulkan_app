@@ -12,6 +12,17 @@ private:
 
 	int width = 700, height = 700;
 	int ExCount = 0;
+
+	std::vector<const char*> validationLayers = {
+		"VK_LAYER_KHRONOS_validation"
+	};
+
+#ifdef NDEBUG
+	const bool enableValidationLayers = true;
+#else
+	const bool enableValidationLayers = false;
+#endif
+
 	GLFWwindow* glfwWindow;
 
 	//Handle to instance
@@ -45,6 +56,12 @@ private:
 	{
 		//Connects the vulkan lib to my applcation
 		CreateInstance();
+		
+		if (enableValidationLayers && !CheckValidationLayerSupport())
+		{
+			//Throw an runtime_error
+			throw std::runtime_error("Validation layer support requested, but not available");
+		}
 	}
 
 	void Update()
@@ -53,6 +70,31 @@ private:
 		{
 			glfwPollEvents();
 		}
+	}
+
+	bool CheckValidationLayerSupport()
+	{
+		uint32_t LayerSupportCount;
+		vkEnumerateInstanceLayerProperties(&LayerSupportCount, nullptr);
+
+		std::vector<VkLayerProperties> availableLayers(LayerSupportCount);
+		vkEnumerateInstanceLayerProperties(&LayerSupportCount, availableLayers.data());
+
+		for (const auto& layerName : validationLayers)
+		{
+			bool layerFound = false;
+
+			for (const auto& availableLayer : availableLayers)
+			{
+				if (strcmp(layerName, availableLayer.layerName) == 0)
+				{
+					layerFound = true;
+					break;
+				}
+			}
+			if (!layerFound) return false;
+		}
+		return true;
 	}
 
 	void CleanUp()
@@ -114,8 +156,6 @@ private:
 		vkEnumerateInstanceExtensionProperties(nullptr, &ExtensionCount, extension.data());
 		vkEnumerateInstanceExtensionProperties(nullptr, &glfwExtensionsCount, glfwExtensions.data());
 
-
-		
 		//What extensions are available through vulkan and glfw?
 		
 		std::cout << "avaliable extension throught vulkan and glfw" << std::endl;
@@ -139,6 +179,11 @@ private:
 					ExCount++;
 				}
 					
+			}
+			if (ExCount == 20)
+			{
+				delete ptrEx;
+				delete ptrGlfwEx;
 			}
 		}
 		std::cout << "Total extension count: " << ExCount << std::endl;
